@@ -12,6 +12,26 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController questionController = TextEditingController();
 
+  void showResponse(RespuestaProvider respuestaProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              if (respuestaProvider.mensaje.answer.isNotEmpty)
+                Text(respuestaProvider.mensaje.answer),
+              if (respuestaProvider.mensaje.image.isNotEmpty)
+                Image.network(respuestaProvider.mensaje.image),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final respuestaProvider = context.watch<RespuestaProvider>();
@@ -32,14 +52,12 @@ class _HomeState extends State<Home> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => respuestaProvider.loadRespuesta(),
+              onPressed: () async {
+                await respuestaProvider.loadRespuesta();
+                showResponse(respuestaProvider);
+              },
               child: Text('Obtener Respuesta'),
             ),
-            SizedBox(height: 20),
-            if (respuestaProvider.mensaje.answer.isNotEmpty)
-              Text(respuestaProvider.mensaje.answer),
-            if (respuestaProvider.mensaje.image.isNotEmpty)
-              Image.network(respuestaProvider.mensaje.image),
           ],
         ),
       ),
